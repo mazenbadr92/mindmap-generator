@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { mindMapRouter } from "./api/mindMapApi";
 import { authenticateToken } from "./middleware/authMiddleWare";
+import { StatusCodes } from "http-status-codes";
 
 const app = express();
 const port = Number(process.env.PORT) || 8080;
@@ -15,5 +16,5 @@ app.listen(port, "0.0.0.0", () => {
 });
 
 app.get("/health", (req, res) => {
-  res.status(200).send("OK");
+  res.status(StatusCodes.OK).send("OK");
 });

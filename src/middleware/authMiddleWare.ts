@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { env } from "../config/env";
+import { StatusCodes } from "http-status-codes";
 
 export function authenticateToken(
   req: Request,
@@ -10,15 +11,14 @@ export function authenticateToken(
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ error: "Missing token" });
+    res.status(StatusCodes.UNAUTHORIZED).json({ error: "Missing token" });
     return;
   }
 
-  // Here you can later add JWT verification or external validation
   if (token !== env.API_SECRET_TOKEN) {
-    res.status(403).json({ error: "Invalid token" });
+    res.status(StatusCodes.FORBIDDEN).json({ error: "Invalid token" });
     return;
   }
 
-  next(); // ✅ continue request
+  next();
 }

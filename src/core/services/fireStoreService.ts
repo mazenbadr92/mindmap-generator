@@ -13,7 +13,7 @@ export async function saveMindMap(
   topic: string,
   data: MindMap
 ): Promise<void> {
-  const id = `${subject}--${topic}`.replace(/\s+/g, "-").toLowerCase(); // simple unique key
+  const id = `${subject}--${topic}`.replace(/\s+/g, "-").toLowerCase();
 
   await firestore.collection(collectionName).doc(id).set({
     subject,

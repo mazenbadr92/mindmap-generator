@@ -3,6 +3,7 @@ import request from "supertest";
 import { mindMapRouter } from "../api/mindMapApi";
 import { getMindMaps } from "../core/services/fireStoreService";
 import { generateMindMapsFromCSV } from "../core/services/generateService";
+import { StatusCodes } from "http-status-codes";
 
 // Mocks
 jest.mock("../core/services/fireStoreService");
@@ -27,7 +28,7 @@ describe("mindMapRouter", () => {
         "/mindmaps?subject=Math&topic=Algebra"
       );
 
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(StatusCodes.OK);
       expect(res.body.data).toHaveLength(1);
       expect(getMindMaps).toHaveBeenCalledWith({
         subject: "Math",
@@ -44,7 +45,7 @@ describe("mindMapRouter", () => {
         "/mindmaps?subject=Math&topic=Algebra"
       );
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.body).toEqual({ error: "Failed to fetch mindmaps" });
     });
   });
@@ -52,7 +53,7 @@ describe("mindMapRouter", () => {
   describe("POST /generate", () => {
     it("should return 400 if inputFile is missing", async () => {
       const res = await request(mockApp).post("/generate").send({});
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
       expect(res.body).toEqual({ error: "inputFile is required in body" });
     });
 
@@ -60,7 +61,7 @@ describe("mindMapRouter", () => {
       const res = await request(mockApp)
         .post("/generate")
         .send({ inputFile: 123 });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
       expect(res.body).toEqual({ error: "inputFile is required in body" });
     });
 
@@ -76,7 +77,7 @@ describe("mindMapRouter", () => {
         .post("/generate")
         .send({ inputFile: "topics.csv" });
 
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(StatusCodes.OK);
       expect(res.body.status).toEqual(mockStatus);
       expect(generateMindMapsFromCSV).toHaveBeenCalledWith("topics.csv");
     });
@@ -90,7 +91,7 @@ describe("mindMapRouter", () => {
         .post("/generate")
         .send({ inputFile: "topics.csv" });
 
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(StatusCodes.INTERNAL_SERVER_ERROR);
       expect(res.body).toEqual({ error: "Mind map generation failed" });
     });
   });

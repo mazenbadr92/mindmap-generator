@@ -19,3 +19,11 @@ export interface MindMap {
   mainTopic: string;
   subTopics: MindMapNode[];
 }
+
+export enum GPT_MODELS {
+  GPT_3_5_TURBO = "gpt-3.5-turbo",
+}
+
+export enum GPT_ROLES {
+  USER = "user",
+}
