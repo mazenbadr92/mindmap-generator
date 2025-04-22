@@ -1,0 +1,54 @@
+{
+  "name": "mindmap-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc",
+    "test:csv:read": "ts-node src/dev/testCsvReader.ts",
+    "test:csv:write": "ts-node src/dev/testCsvWriter.ts",
+    "test:promptService": "ts-node src/dev/testPromptService.ts",
+    "test:llm": "ts-node src/dev/testLllmService.ts",
+    "run:generate": "ts-node src/index.ts",
+    "start:api": "node build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mazenbadr92/mindmap-generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mazenbadr92/mindmap-generator/issues"
+  },
+  "homepage": "https://github.com/mazenbadr92/mindmap-generator#readme",
+  "dependencies": {
+    "@fast-csv/format": "^5.0.2",
+    "@google-cloud/firestore": "^7.11.0",
+    "@google-cloud/storage": "^7.16.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "fast-csv": "^5.0.2",
+    "openai": "^4.95.0",
+    "promise-limit": "^2.7.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.14.1",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
