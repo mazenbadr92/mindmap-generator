@@ -6,11 +6,6 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc",
-    "test:csv:read": "ts-node src/dev/testCsvReader.ts",
-    "test:csv:write": "ts-node src/dev/testCsvWriter.ts",
-    "test:promptService": "ts-node src/dev/testPromptService.ts",
-    "test:llm": "ts-node src/dev/testLllmService.ts",
-    "run:generate": "ts-node src/index.ts",
     "start:api": "node build/index.js"
   },
   "repository": {
