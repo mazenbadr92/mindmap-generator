@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc",
-    "start:api": "node build/index.js"
+    "start": "node build/index.js"
   },
   "repository": {
     "type": "git",

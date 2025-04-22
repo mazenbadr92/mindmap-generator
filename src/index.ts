@@ -4,7 +4,7 @@ import { mindMapRouter } from "./api/mindMapApi";
 import { authenticateToken } from "./middleware/authMiddleWare";
 
 const app = express();
-const port = Number(process.env.PORT) || 8080;
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
