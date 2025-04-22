@@ -46,14 +46,14 @@ Create a `.env.local` file in the root of the project:
 OPENAI_API_KEY=your_openai_api_key
 
 # Google Cloud Project
-GCP_PROJECT_ID=backend-assignment-mazen
+GCP_PROJECT_ID={gcp_project_id}
 
 # Server
 PORT=8080
 
 # GCS Configuration
 USE_GCS=true                      # Set to false to use local CSVs
-CSV_BUCKET=gs://mindmap-generator
+CSV_BUCKET={gcs_bucket}
 
 # Auth Configuration
 USE_AUTH=true                    # Set to false to disable token check
