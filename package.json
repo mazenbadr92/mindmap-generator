@@ -30,8 +30,9 @@
     "fast-csv": "^5.0.2",
     "openai": "^4.95.0",
     "promise-limit": "^2.7.0",
-    "zod": "^3.24.3",
-    "typescript": "^5.8.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -43,8 +44,6 @@
     "jest-environment-node": "^29.7.0",
     "nodemon": "^3.1.9",
     "supertest": "^7.1.0",
-    "ts-jest": "^29.3.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "ts-jest": "^29.3.2"
   }
 }
