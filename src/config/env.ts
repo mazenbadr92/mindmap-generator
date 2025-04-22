@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { z } from "zod";
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV === "local") {
   dotenv.config({ path: ".env.local" });
 }
 
