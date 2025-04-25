@@ -58,6 +58,10 @@ CSV_BUCKET={gcs_bucket}
 # Auth Configuration
 USE_AUTH=true                    # Set to false to disable token check
 API_SECRET_TOKEN=your_secret_token  # To be replaced with OAuth2
+
+#LOCAL CSV FILE DIRECTORIES
+LOCAL_INPUT_DIR={path_to_local_input_folder_relative_to_src_folder}
+LOCAL_OUTPUT_DIR={path_to_local_output_folder_relative_to_src_folder}
 ```
 
 ---

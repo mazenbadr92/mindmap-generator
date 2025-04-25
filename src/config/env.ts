@@ -13,6 +13,8 @@ const envSchema = z.object({
   USE_AUTH: z.string().min(1, "Missing Use AUTH Flag"),
   API_SECRET_TOKEN: z.string().min(1, "Missing API Secret Token"),
   PORT: z.string().optional(),
+  LOCAL_INPUT_DIR: z.string().optional(),
+  LOCAL_OUTPUT_DIR: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

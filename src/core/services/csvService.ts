@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import fsPromises from "fs/promises";
 import * as fss from "fs";
 import path from "path";
 import { Storage } from "@google-cloud/storage";
@@ -6,18 +6,36 @@ import { env } from "../../config/env";
 import { InputRow, StatusRow } from "../../types";
 import csvParser from "csv-parser";
 import { format } from "@fast-csv/format";
+import { Readable } from "stream";
 
 const isGCS = env.USE_GCS === "true";
 const storage = new Storage();
 const CSV_BUCKET = env.CSV_BUCKET;
 
-const LOCAL_INPUT_DIR = path.resolve(__dirname, "../../../input");
-const LOCAL_OUTPUT_DIR = path.resolve(__dirname, "../../../output");
-
-const parseName = (filename: string) => ({
+export const parseName = (filename: string) => ({
   input: filename,
   output: `${path.parse(filename).name}_status.csv`,
 });
+
+async function parseCsvStream(
+  stream: NodeJS.ReadableStream
+): Promise<InputRow[]> {
+  const results: InputRow[] = [];
+  return new Promise((resolve, reject) => {
+    (stream as any)
+      .pipe(csvParser())
+      .on("data", (data: Record<string, string>) => {
+        if (data.subject && data.topic) {
+          results.push({
+            subject: data.subject.trim(),
+            topic: data.topic.trim(),
+          });
+        }
+      })
+      .on("end", () => resolve(results))
+      .on("error", reject);
+  });
+}
 
 export async function readCSV(filename: string): Promise<InputRow[]> {
   const { input } = parseName(filename);
@@ -28,10 +46,19 @@ export async function readCSV(filename: string): Promise<InputRow[]> {
       .file(`input/${input}`)
       .download();
 
-    return parseCsvBuffer(contents);
+    const readable = new Readable();
+    readable._read = () => {};
+    readable.push(contents);
+    readable.push(null);
+    return parseCsvStream(readable);
   }
+  const LOCAL_INPUT_DIR = env.LOCAL_INPUT_DIR
+    ? path.resolve(env.LOCAL_INPUT_DIR)
+    : "";
 
-  return parseCsvFile(path.join(LOCAL_INPUT_DIR, input));
+  const filePath = path.join(LOCAL_INPUT_DIR, input);
+  const fileStream = fss.createReadStream(filePath);
+  return parseCsvStream(fileStream);
 }
 
 export async function writeCSV(
@@ -48,59 +75,20 @@ export async function writeCSV(
       destination: `output/${output}`,
     });
 
-    await fs.unlink(tempPath);
+    await fsPromises.unlink(tempPath);
   } else {
+    const LOCAL_OUTPUT_DIR = env.LOCAL_OUTPUT_DIR
+      ? path.resolve(env.LOCAL_OUTPUT_DIR)
+      : "";
     const localPath = path.join(LOCAL_OUTPUT_DIR, output);
     await writeCsvToFile(localPath, data);
   }
 }
 
-function parseCsvBuffer(buffer: Buffer): Promise<InputRow[]> {
-  const results: InputRow[] = [];
-
-  return new Promise((resolve, reject) => {
-    const { Readable } = require("stream");
-    const readable = new Readable();
-    readable._read = () => {};
-    readable.push(buffer);
-    readable.push(null);
-
-    readable
-      .pipe(csvParser())
-      .on("data", (data: Record<string, string>) => {
-        if (data.subject && data.topic) {
-          results.push({
-            subject: data.subject.trim(),
-            topic: data.topic.trim(),
-          });
-        }
-      })
-      .on("end", () => resolve(results))
-      .on("error", reject);
-  });
-}
-
-function parseCsvFile(filePath: string): Promise<InputRow[]> {
-  const results: InputRow[] = [];
-
-  return new Promise((resolve, reject) => {
-    fss
-      .createReadStream(filePath)
-      .pipe(csvParser())
-      .on("data", (data: Record<string, string>) => {
-        if (data.subject && data.topic) {
-          results.push({
-            subject: data.subject.trim(),
-            topic: data.topic.trim(),
-          });
-        }
-      })
-      .on("end", () => resolve(results))
-      .on("error", reject);
-  });
-}
-
-function writeCsvToFile(filePath: string, data: StatusRow[]): Promise<void> {
+export function writeCsvToFile(
+  filePath: string,
+  data: StatusRow[]
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const ws = fss.createWriteStream(filePath);
     const csvStream = format({ headers: ["topic", "status"] });

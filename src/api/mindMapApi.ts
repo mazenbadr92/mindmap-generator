@@ -15,7 +15,9 @@ mindMapRouter.get("/mindmaps", async (req, res) => {
     res.status(StatusCodes.OK).json({ data: maps });
   } catch (error) {
     console.error("🔥 Error fetching mindmaps:", error);
-    res.status(500).json({ error: "Failed to fetch mindmaps" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Failed to fetch mindmaps" });
   }
 });
 
@@ -23,7 +25,9 @@ mindMapRouter.post("/generate", async (req, res) => {
   const { inputFile } = req.body;
 
   if (!inputFile || typeof inputFile !== "string") {
-    res.status(400).json({ error: "inputFile is required in body" });
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: "inputFile is required in body" });
     return;
   }
 
@@ -32,6 +36,8 @@ mindMapRouter.post("/generate", async (req, res) => {
     res.status(StatusCodes.OK).json({ status });
   } catch (err) {
     console.error("❌ Generation error:", err);
-    res.status(500).json({ error: "Mind map generation failed" });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: "Mind map generation failed" });
   }
 });
