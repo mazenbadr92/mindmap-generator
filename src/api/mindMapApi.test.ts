@@ -5,7 +5,6 @@ import { getMindMaps } from "../core/services/fireStoreService";
 import { generateMindMapsFromCSV } from "../core/services/generateService";
 import { StatusCodes } from "http-status-codes";
 
-// Mocks
 jest.mock("../core/services/fireStoreService");
 jest.mock("../core/services/generateService");
 

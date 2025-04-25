@@ -10,8 +10,10 @@ export async function generateMindMapsFromCSV(
 ): Promise<StatusRow[]> {
   const rows = await readCSV(inputFile);
   const results: StatusRow[] = [];
+  const LLM_PROMISES_LIMIT = 5;
 
-  const limit: <T>(fn: () => Promise<T>) => Promise<T> = promiseLimit(5);
+  const limit: <T>(fn: () => Promise<T>) => Promise<T> =
+    promiseLimit(LLM_PROMISES_LIMIT);
 
   const tasks: Promise<StatusRow>[] = rows.map((row: InputRow) =>
     limit<StatusRow>(async () => {
