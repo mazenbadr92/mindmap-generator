@@ -1,5 +1,5 @@
 import { Firestore, Timestamp } from "@google-cloud/firestore";
-import { MindMap } from "../../types";
+import { MindMap, MindMapData } from "../../types";
 import { env } from "../../config/env";
 
 const firestore = new Firestore({
@@ -26,7 +26,7 @@ export async function saveMindMap(
 export async function getMindMaps(filter?: {
   subject?: string;
   topic?: string;
-}): Promise<any[]> {
+}): Promise<MindMapData[]> {
   let query = firestore.collection("mindmaps") as FirebaseFirestore.Query;
 
   if (filter?.subject) {
@@ -39,8 +39,11 @@ export async function getMindMaps(filter?: {
 
   const snapshot = await query.get();
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+  return snapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      } as MindMapData)
+  );
 }

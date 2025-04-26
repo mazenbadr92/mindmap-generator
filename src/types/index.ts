@@ -27,3 +27,20 @@ export enum GPT_MODELS {
 export enum GPT_ROLES {
   USER = "user",
 }
+
+export interface MindMapData {
+  id: string;
+  subject: string;
+  topic: string;
+  generatedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
+  mindMap: {
+    mainTopic: string;
+    subTopics: {
+      title: string;
+      description: string;
+    }[];
+  };
+}
