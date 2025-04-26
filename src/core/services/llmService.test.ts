@@ -1,8 +1,3 @@
-// src/core/services/llmService.test.ts
-
-// 1) Ensure env var before module load
-process.env.OPENAI_API_KEY = "test-key";
-
 import { GPT_MODELS, GPT_ROLES } from "../../types";
 
 describe("generateMindMap", () => {
@@ -20,7 +15,6 @@ describe("generateMindMap", () => {
   });
 
   it("parses JSON inside ```json``` fences", async () => {
-    // Arrange: mock OpenAI client
     mockCreate = jest.fn().mockResolvedValue({
       choices: [{ message: { content: '```json {"foo":"bar"} ```' } }],
     });
@@ -30,11 +24,9 @@ describe("generateMindMap", () => {
       })),
     }));
 
-    // Act
     const { generateMindMap } = require("./llmService");
     const result = await generateMindMap("my-prompt");
 
-    // Assert
     expect(mockCreate).toHaveBeenCalledWith({
       model: GPT_MODELS.GPT_3_5_TURBO,
       messages: [{ role: GPT_ROLES.USER, content: "my-prompt" }],

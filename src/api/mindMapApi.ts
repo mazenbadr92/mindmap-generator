@@ -14,7 +14,7 @@ mindMapRouter.get("/mindmaps", async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ data: maps });
   } catch (error) {
-    console.error("🔥 Error fetching mindmaps:", error);
+    console.error("❌ Error fetching mindmaps:", error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Failed to fetch mindmaps" });

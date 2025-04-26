@@ -20,7 +20,6 @@ describe("parseCsvStream", () => {
   it("should reject if stream emits an error", async () => {
     const readable = new Readable({
       read() {
-        // Emit error without ending the stream
         setImmediate(() => {
           this.destroy(new Error("stream error"));
         });

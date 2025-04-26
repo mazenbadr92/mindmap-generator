@@ -1,10 +1,4 @@
-// src/core/services/fireStoreService.test.ts
-
-// Ensure env var is set before module load
-process.env.GCP_PROJECT_ID = "test-project";
-
 describe("fireStoreService", () => {
-  // Mocks for Firestore and Timestamp
   const setMock = jest.fn().mockResolvedValue(undefined);
   const getMock = jest.fn().mockResolvedValue({
     docs: [

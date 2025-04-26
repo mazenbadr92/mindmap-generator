@@ -23,16 +23,12 @@ jest.mock("fs", () => ({
       },
     });
 
-    // Critical fix: real writable streams have .pipe and .on
     (writable as any).pipe = function () {
       return this;
     };
     (writable as any).on = function (event: string, callback: any) {
       if (event === "finish") {
         setImmediate(callback);
-      }
-      if (event === "error") {
-        // Optional if you want error simulation
       }
       return this;
     };
@@ -55,7 +51,7 @@ jest.mock("@fast-csv/format", () => {
 
       csvStream.write = (chunk: any) => {
         if (typeof chunk === "object") {
-          const line = `${chunk.topic},${chunk.status}\n`; // turn object into CSV line
+          const line = `${chunk.topic},${chunk.status}\n`;
           return realWrite(Buffer.from(line));
         }
         return realWrite(chunk);
@@ -153,7 +149,7 @@ describe("readCSV", () => {
 
   it("should read CSV locally when USE_GCS is false", async () => {
     process.env.USE_GCS = "false";
-    process.env.LOCAL_INPUT_DIR = "/fake/input"; // Mock local dir
+    process.env.LOCAL_INPUT_DIR = "/fake/input";
 
     const mockParseCsvStream = jest
       .fn()
@@ -241,7 +237,7 @@ describe("writeCSV", () => {
     process.env.USE_GCS = "false";
     process.env.LOCAL_OUTPUT_DIR = "/fake/output";
 
-    const { writeCSV } = require("./csvService");
+    const { writeCSV } = require(servicePath);
 
     const data: StatusRow[] = [{ topic: "Math", status: "Success" }];
     await expect(writeCSV("topics.csv", data)).resolves.toBeUndefined();

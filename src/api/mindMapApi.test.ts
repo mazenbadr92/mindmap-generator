@@ -5,7 +5,6 @@ import * as fireStoreService from "../core/services/fireStoreService";
 import * as generateService from "../core/services/generateService";
 import { StatusCodes } from "http-status-codes";
 
-// Mock service modules
 jest.mock("../core/services/fireStoreService");
 jest.mock("../core/services/generateService");
 
@@ -14,7 +13,6 @@ describe("mindMapRouter", () => {
   let consoleErrorSpy: jest.SpyInstance;
 
   beforeAll(() => {
-    // Suppress console.error during tests
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     app = express();
     app.use(express.json());

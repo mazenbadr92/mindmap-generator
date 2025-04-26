@@ -2,7 +2,7 @@ describe("generateMindMapsFromCSV", () => {
   let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    // suppress console.error
+    console.error;
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -12,7 +12,6 @@ describe("generateMindMapsFromCSV", () => {
   });
 
   it("processes all rows successfully and writes results", async () => {
-    // Arrange: stub dependencies
     const rows = [
       { subject: "sub1", topic: "top1" },
       { subject: "sub2", topic: "top2" },
@@ -37,11 +36,9 @@ describe("generateMindMapsFromCSV", () => {
     }));
     jest.doMock("./fireStoreService", () => ({ saveMindMap: mockSaveMindMap }));
 
-    // Act: import after mocks
     const { generateMindMapsFromCSV } = require("./generateService");
     const result = await generateMindMapsFromCSV("input.csv");
 
-    // Assert
     expect(mockReadCSV).toHaveBeenCalledWith("input.csv");
     expect(mockBuildPrompt).toHaveBeenCalledTimes(rows.length);
     rows.forEach((row) => {
@@ -62,7 +59,6 @@ describe("generateMindMapsFromCSV", () => {
   });
 
   it("marks failures when generation errors occur", async () => {
-    // Arrange: stub dependencies
     const rows = [
       { subject: "a", topic: "x" },
       { subject: "b", topic: "y" },
@@ -86,11 +82,9 @@ describe("generateMindMapsFromCSV", () => {
     }));
     jest.doMock("./fireStoreService", () => ({ saveMindMap: mockSaveMindMap }));
 
-    // Act
     const { generateMindMapsFromCSV } = require("./generateService");
     const result = await generateMindMapsFromCSV("file.csv");
 
-    // Assert
     expect(result).toEqual([
       { topic: "x", status: "Success" },
       { topic: "y", status: "Failure" },

@@ -1,5 +1,3 @@
-// src/core/services/promptService.test.ts
-
 import { buildPrompt } from "./promptService";
 import { MindMap } from "../../types";
 
@@ -28,20 +26,16 @@ describe("promptService.buildPrompt", () => {
   });
 
   it("includes the JSON code fence with the correct example structure", () => {
-    // Extract content between ```json and ```
     const fenceRegex = /```json\s*([\s\S]*?)\s*```/;
     const match = prompt.match(fenceRegex);
     expect(match).not.toBeNull();
 
     const jsonBlock = match![1];
-    // Parse the JSON block
     const parsed: MindMap = JSON.parse(jsonBlock);
-    // The example structure should have mainTopic === exampleTopic
     expect(parsed).toMatchObject({
       mainTopic: exampleTopic,
       subTopics: expect.any(Array),
     });
-    // Check that subTopics array has the expected shape
     expect(parsed.subTopics.length).toBe(2);
     parsed.subTopics.forEach((st) => {
       expect(typeof st.title).toBe("string");
