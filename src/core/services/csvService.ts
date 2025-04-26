@@ -4,9 +4,9 @@ import path from "path";
 import { Storage } from "@google-cloud/storage";
 import { env } from "../../config/env";
 import { InputRow, StatusRow } from "../../types";
-import csvParser from "csv-parser";
 import { format } from "@fast-csv/format";
 import { Readable } from "stream";
+import { parseCsvStream } from "../utils/csvUtils";
 
 const isGCS = env.USE_GCS === "true";
 const storage = new Storage();
@@ -17,71 +17,62 @@ export const parseName = (filename: string) => ({
   output: `${path.parse(filename).name}_status.csv`,
 });
 
-async function parseCsvStream(
-  stream: NodeJS.ReadableStream
-): Promise<InputRow[]> {
-  const results: InputRow[] = [];
-  return new Promise((resolve, reject) => {
-    (stream as any)
-      .pipe(csvParser())
-      .on("data", (data: Record<string, string>) => {
-        if (data.subject && data.topic) {
-          results.push({
-            subject: data.subject.trim(),
-            topic: data.topic.trim(),
-          });
-        }
-      })
-      .on("end", () => resolve(results))
-      .on("error", reject);
-  });
-}
-
 export async function readCSV(filename: string): Promise<InputRow[]> {
-  const { input } = parseName(filename);
+  try {
+    const { input } = parseName(filename);
 
-  if (isGCS) {
-    const [contents] = await storage
-      .bucket(CSV_BUCKET)
-      .file(`input/${input}`)
-      .download();
+    if (isGCS) {
+      const [contents] = await storage
+        .bucket(CSV_BUCKET)
+        .file(`input/${input}`)
+        .download();
 
-    const readable = new Readable();
-    readable._read = () => {};
-    readable.push(contents);
-    readable.push(null);
-    return parseCsvStream(readable);
+      const readable = new Readable();
+      readable._read = () => {};
+      readable.push(contents);
+      readable.push(null);
+      return await parseCsvStream(readable);
+    }
+
+    const LOCAL_INPUT_DIR = env.LOCAL_INPUT_DIR
+      ? path.resolve(env.LOCAL_INPUT_DIR)
+      : "";
+
+    const filePath = path.join(LOCAL_INPUT_DIR, input);
+    const fileStream = fss.createReadStream(filePath);
+    return await parseCsvStream(fileStream);
+  } catch (error) {
+    console.error(`❌ Failed to read CSV file "${filename}":`, error);
+    throw new Error(`Failed to read CSV file "${filename}"`);
   }
-  const LOCAL_INPUT_DIR = env.LOCAL_INPUT_DIR
-    ? path.resolve(env.LOCAL_INPUT_DIR)
-    : "";
-
-  const filePath = path.join(LOCAL_INPUT_DIR, input);
-  const fileStream = fss.createReadStream(filePath);
-  return parseCsvStream(fileStream);
 }
 
 export async function writeCSV(
   inputFilename: string,
   data: StatusRow[]
 ): Promise<void> {
-  const { output } = parseName(inputFilename);
+  try {
+    const { output } = parseName(inputFilename);
 
-  if (isGCS) {
-    const tempPath = path.join("/tmp", output);
-    await writeCsvToFile(tempPath, data);
+    if (isGCS) {
+      const tempPath = path.join("/tmp", output);
+      await writeCsvToFile(tempPath, data);
 
-    await storage.bucket(CSV_BUCKET).upload(tempPath, {
-      destination: `output/${output}`,
-    });
+      await storage.bucket(CSV_BUCKET).upload(tempPath, {
+        destination: `output/${output}`,
+      });
 
-    await fsPromises.unlink(tempPath);
-  } else {
-    const LOCAL_OUTPUT_DIR = env.LOCAL_OUTPUT_DIR
-      ? path.resolve(env.LOCAL_OUTPUT_DIR)
-      : "";
-    const localPath = path.join(LOCAL_OUTPUT_DIR, output);
-    await writeCsvToFile(localPath, data);
+      await fsPromises.unlink(tempPath);
+    } else {
+      const LOCAL_OUTPUT_DIR = env.LOCAL_OUTPUT_DIR
+        ? path.resolve(env.LOCAL_OUTPUT_DIR)
+        : "";
+      const localPath = path.join(LOCAL_OUTPUT_DIR, output);
+      await writeCsvToFile(localPath, data);
+    }
+  } catch (error) {
+    console.error(`❌ Failed to write CSV file "${inputFilename}":`, error);
+    throw new Error(`Failed to write CSV file "${inputFilename}"`);
   }
 }
 
